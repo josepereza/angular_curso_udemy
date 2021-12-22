@@ -283,3 +283,257 @@ const { details: { author: authorDetail, year } } = musicPlayerW
 
 console.log(`Autor: ${authorDetail}, Año: ${year}`)
 ```
+
+## Desestructuración de Arreglos
+
+En la desestructuración de Objetos, la posición en que se desestructuran los elementos no es importante. En la desestructuración de arreglos si lo es. Cada posición al no tener un nombre que lo identifique, va a tener que ser referenciada claramente en la posición que se desestructure. Por ejemplo tenemos un arreglo y queremos imprimirlo. Podemos hacerlo de esta manera:
+
+```ts
+const marvel: string[] = ['Iron Man', 'Spider-Man', 'Galactus']
+console.log(`${marvel[0]}, ${marvel[1]}, ${marvel[2]}`)
+```
+
+Si aplicamos desestructuración, podemos darle un nombre especifico a cada posición.
+
+```ts
+const marvel: string[] = ['Iron Man', 'Spider-Man', 'Galactus']
+const [ im, sm, g ] = marvel
+
+console.log(`${im}, ${sm}, ${g}`)
+```
+
+Si queremos saltarnos posiciones del arreglo debemos enunciar los espacios que no necesitamos con una coma:
+
+```ts
+const marvel: string[] = ['Iron Man', 'Spider-Man', 'Galactus']
+const [ , , g ] = marvel
+
+console.log(`${g}`)
+```
+
+## Desestructuración de argumentos
+
+Tenemos una función para calcular los impuestos sobre venta. Esa función recibe un arreglo de objetos, a los cuales mapea y agrega su valor a una variable con el total y luego lo multiplica por el impuesto:
+
+```ts
+const calculateSalesTax = (products: Product[], tax: number): number => {
+    let total = 0
+    products.map((p: Product) => total += p.price)
+    return total * tax
+}
+```
+
+Como nos damos cuenta, cuando recorremos la función tenemos un objeto llamado `p` que es de tipo `Product`. Nosotros podemos desestructurar los elementos de dicho argumento y simplificar un poco más la función:
+
+```ts
+const calculateSalesTax = (products: Product[], tax: number): number => {
+    let total = 0
+    products.map(({ price }) => total += price)
+    return total * tax
+}
+```
+
+Nuestra función puede retornar un arreglo en vez de un solo número, por ejemplo queremos retornar el total de los productos y el precio con impuesto añadido:
+
+```ts
+const calculateSalesTax = (products: Product[], tax: number): [number, number] => {
+    let total = 0
+    products.map(({ price }) => total += price)
+    return [total, total * tax]
+}
+```
+
+Cuando queremos crear una variable con el resultado de la función lo podemos hacer de 2 maneras:
+
+```ts
+const isv = calculateSalesTax(commodity, 0.19)
+console.log('Total e ISV:', isv)
+```
+
+O:
+
+```ts
+const [total, isv] = calculateSalesTax(commodity, 0.19)
+console.log('Total de los productos: ', total)
+console.log('Impuesto sobre venta:', isv)
+```
+
+## Clases Básicas
+
+La diferencia entre una clase y una interfaz, es que en la clase puedo definir un método o varios y proveer la implementación estandar de los mismos. Una clase simple puede lucir así:
+
+```ts
+class Heroe {
+    alterEgo: string
+    age: number
+    nameReal: string
+}
+
+
+const ironMan = new Heroe()
+console.log(ironMan)
+```
+
+También podemos deternminar el acceso a las propiedades de la clase mediante las palabras reservadas `public`, `private` y `static`.
+
+## Constructor de una clase
+
+Si queremos asignarle a una clases sus argumentos podemos escribir las propiedades y luego añadirlas al constructor. Por ejemplo si queremos que nos ingresen los datos para inicializar la clase, podemos hacer lo siguiente:
+
+```ts
+class Heroe {
+    alterEgo: string
+    age: number
+    nameReal: string
+
+    constructor(alterEgo: string, age: number, name: string) {
+        this.alterEgo = alterEgo
+        this.age = age
+        this.nameReal = name
+    }
+}
+
+
+const ironMan = new Heroe('Ironman', 30, 'Tony Stark')
+console.log(ironMan)
+```
+
+Pero existe una manera más corta de pedir los valores para inicializar la clase, y es definir los argumentos directamente en el constructor:
+
+```ts
+class Heroe {
+    constructor(
+        public alterEgo: string, 
+        public age: number, 
+        public name: string
+    ) {}
+}
+
+
+const ironMan = new Heroe('Ironman', 30, 'Tony Stark')
+console.log(ironMan)
+```
+
+## Extender una clase
+
+En el paradigma de la programación orientada a objetos (POO) existe la herencia. Podemos tener una clase que repite los argumentos de otra, entonces sacamos una clase padre con los argumentos que se repiten, y le extendemos clases hijas que hereden dichos argumentos. Por ejemplo:
+
+```ts
+class Person {
+    constructor(public name: string, public address: string) { }
+}
+
+
+class Heroe extends Person {
+    constructor(public alterEgo: string, public age: number, public name: string) {
+        super(name, `New York`)
+    }
+}
+
+
+const ironMan = new Heroe('Ironman', 30, 'Tony Stark')
+console.log(ironMan)
+```
+
+## Genericos
+
+Existen funciones que podemos dejar de tipo generico para que pueda detectar el retorno de la función, en base al tipo de los argumentos. Para declarar que una función es de tipo generico, usamos `<T>` y también definimos los tipos de los argumentos como `T`.
+
+```ts
+function whatTypeAmI<T> (args: T) {
+    return args
+}
+
+
+let iAmString = whatTypeAmI('Soy una cadena de texto')
+let iAmNumber = whatTypeAmI(100)
+```
+
+Si queremos especificar de que tipo debe ser nuestra función, debemos ingresar el tipo entre los signos `<>` luego de llamar el nombre de la función.
+
+```ts
+let iAmExplicit = whatTypeAmI<string>('Soy una variable explícita')
+```
+
+## Decoradores de clases
+
+De la documentación de TS extraemos la siguiente función que va a determinar el comportamiento del decorador a usar en nuestra clase:
+
+```ts
+function classDecorator<T extends { new(...args: any[]): {} }>(constructor: T) {
+    return class extends constructor {
+        newProperty = "new property"
+        hello = "override"
+    }
+}
+
+
+@classDecorator
+class SuperClass {
+    public prop: string = 'ABC123'
+
+    print() {
+        console.log('Hola mundo')
+    }
+}
+```
+
+Para poder usar los decoradores necesitamos ir al archivo `tsconfig.json` y hacer la siguiente configuración:
+
+```json
+{
+    "compilerOptions": {
+        ...,
+        "experimentalDecorators": true,
+        ...
+    }
+}
+```
+
+Si nosotros imprimimos la clase que creamos vamos a observar los siguiente:
+
+```ts
+console.log(SuperClass)
+```
+
+```ts
+class extends constructor {
+        constructor() {
+            super(...arguments);
+            this.newProperty = "new property";
+            this.hello = "override";
+        }
+    }
+```
+
+Los decoradores sirven para extender la funcionalidad de una clase añadiendo lógica adicional.
+
+## Encadenamiento Opcional
+
+El optional chaining nos permite evitar errores cuando un objeto no tiene un propiedad que ha sido declara como opcional por una interfaz. Por ejemplo declaramos una interfaz que tiene un atributo opcional, en un objeto no lo usamos y en otro si. Luego creamos una función para imprimir la cantidad de elementos dentro de la propiedad declarada opcional. Si la propiedad no existe en el objeto, debemos retornar un 0, pero para evitar un error por pedir de manera obligatoria la propiedad usamos el signo `?` al final del nombre de la propiedad, ejemplo:
+
+```js
+interface Passenger {
+    name: string
+    children?: string[]
+}
+
+const passenger1: Passenger = {
+    name: 'Ferrer'
+}
+
+const passenger2: Passenger = {
+    name: 'Ferrer',
+    children: ['Hijo 1', 'Hijo 2']
+}
+
+
+const printChildren = (passanger: Passenger): void => {
+    const howChildren = passanger.children?.length || 0
+    console.log(howChildren)
+}
+
+
+printChildren(passenger2)   // 2
+printChildren(passenger1)   // 0
+```
