@@ -1,0 +1,30 @@
+<h1>Listado</h1>
+
+<div *ngIf="heroes.length !== 0; else withoutHeroes">
+    <h3>Listado de Héroes</h3>
+
+    <button (click)="deleteFirstHero()">Borrar Héroe</button>
+
+    <ul>
+        <li *ngFor="let hero of heroes; let i = index">
+            {{ i + 1 }}. {{ hero }}
+        </li>
+    </ul>
+</div>
+
+<ng-template #withoutHeroes>
+    <h3>Sin heroes disponibles</h3>
+</ng-template>
+
+
+<div *ngIf="heroesDelete.length !== 0">
+    <h3>Listado de Héroes borrados</h3>
+    
+    <button (click)="restoreHeroes()">Restaurar Todos los Héroes</button>
+
+    <ul>
+        <li *ngFor="let hero of heroesDelete; let i = index">
+            {{ i + 1 }}. {{ hero }}
+        </li>
+    </ul>
+</div>
