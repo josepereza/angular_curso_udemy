@@ -1,0 +1,15 @@
+<div class="bg-dark border-right p-3" id="sidebar">
+    <h3 class="text-light">Gifs - App</h3>
+
+    <hr class="text-light" />
+
+    <div class="list-group list-reset" >
+        <a 
+            href="#" 
+            *ngFor="let r of record" 
+            (click)="search(r)" 
+            class="list-group-item list-group-item-action">
+        {{ r | titlecase }}
+        </a>
+    </div>
+</div>

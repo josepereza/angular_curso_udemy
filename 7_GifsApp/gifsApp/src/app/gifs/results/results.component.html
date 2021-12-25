@@ -1,0 +1,12 @@
+<div class="row">
+    <div class="col-md-4 col-sm-6 animate__animated animate__fadeInUp" *ngFor="let gif of results">
+        <div class="card">
+            <img [src]="gif.images.downsized_medium.url" [alt]="gif.title" class="card-image-top">
+            <div class="card-body">
+                <p class="card-text">
+                    {{ gif.title }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
