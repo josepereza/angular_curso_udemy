@@ -10,4 +10,6 @@ export class BasicComponent {
     public nameLowerCase: string = 'carlos'
     public nameUpperCase: string = 'DAVID'
     public nameTitleCase: string = 'paEz FeRRer'
+
+    public date: Date = new Date()
 }

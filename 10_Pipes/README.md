@@ -471,3 +471,399 @@ export class BasicComponent {
     </div>
 </div>
 ```
+
+## Date Pipe
+
+El uso del pipe Date es un poco más extenso por el tema de los parámetros que puede recibir. En la documentación de Angular sobre [DatePipe](https://angular.io/api/common/DatePipe), nos muestra todos los parámetros que se pueden usar con una fecha. Por ejemplo dentro de `BasicComponent` creamos una variable para una fecha:
+
+```ts
+export class BasicComponent {
+    ...
+    public date: Date = new Date()
+}
+```
+
+Y dentro del template podemos hacer la mutación visual de la siguiente manera:
+
+```html
+<ul>
+    <li>{{ date }}</li>
+    <li>{{ date | date }}</li>
+    <li>{{ date | date : 'short' }}</li>
+    <li>{{ date | date : 'medium' }}</li>
+    <li>{{ date | date : 'long' }}</li>
+    <li>{{ date | date : 'MMMM' }}</li>
+    <li>{{ date | date : 'MMMM dd yyyy' }}</li>
+    <li>{{ date | date : 'h:mm a z' }}</li>
+</ul>
+```
+
+## Cambiar el idioma por defecto
+
+Dentro del archivo `app.module.ts` hacemos la importación la configuración del idioma local en la que se maneja la aplicación y lo registramos en la data local:
+
+```ts
+import esCO from '@angular/common/locales/es-CO'
+import { registerLocaleData } from '@angular/common'
+registerLocaleData(esCO)
+```
+
+Nuestro pipe de date nos permite hacer el cambio del idioma en el resultado, pero para hacerlo de manera global, hacemos un provide dentro del decorador `@NgModule` del módulo `AppModule`:
+
+```ts
+@NgModule({
+    ...,
+    providers: [{
+        provide: LOCALE_ID, useValue: 'es-CO'
+    }],
+    ...
+})
+export class AppModule { }
+```
+
+## Timezone y otros idiomas
+
+Para cambiar la zona horaria de nuestra fecha usamos un 2 argumento con el `GMT` del lugar que queremos coordinar, por ejemplo la zona horaria de Lampung, Indonesia, el cual es la antípoda de Bogotá es GMt+7, mientras que Colombia es GMT-5:
+
+```html
+<li>{{ date | date : 'long' : 'GMT+7' }}</li>
+```
+
+Para configurar la locación del pipe date usamos un tercer argumento en el que definimos la sigla del idioma a usar, por defecto está en `en` pero en la explicación de arriba lo transformamos a `es-CO`:
+
+```html
+<li>{{ date | date : 'long' : '' : 'en' }}</li>
+```
+
+En caso de que queramos otro idioma debemos registrar la configuración local dentro de `AppModule`.
+
+## DecimalPipe
+
+La mutación visual de un número usando el pipe de `number` es muy sencilla. Por ejemplo tenemos 1 variable con un valor:
+
+```ts
+export class NumbersComponent {
+    public netSales: number = 12_345_678.909876
+}
+```
+
+Para usar el pipe hacemos lo siguiente:
+
+```html
+{{ netSales | number }}
+```
+
+Si queremos mostrar si o si 2 decimales usamos un argumento de la siguiente manera, teniendo en cuenta que si se exceden los decimales en la variable original, entonces se aproxima
+
+```html
+{{ netSales | number : '.2-2' }}
+```
+
+Si queremos entre 2 y 5 decimales usamos el argumento así:
+
+```html
+{{ netSales | number : '.2-5' }}
+```
+
+Si queremos mostrar 10 número en la parte entera, con 3 cifras decimales entonces el argumento cambiaría así:
+
+```html
+{{ netSales | number : '10.3-3' }}
+```
+
+## CurrencyPipe y PercentPipe
+
+Podemos usar el pipe `currency` cuando hacemos referencia a dinero:
+
+```html
+{{ netSales | currency }}
+```
+
+Por defecto nos aparece en dolares, pero si queremos cambiar el símbolo a la moneada local usamos un primer parámetro:
+
+```html
+{{ netSales | currency : 'COL' }}
+```
+
+Para usar un símbolo en especifico usamos un segundo parámetro:
+
+```html
+{{ netSales | currency : '' : 'symbol-narrow' }}
+```
+
+Para determinar la cantidad de decimales a usar, empleamos un tercer parámetro:
+
+```html
+{{ netSales | currency : '' : '' : '.0-4' }}
+```
+
+Y un cuarto paramétro para especificar el idioma local:
+
+```html
+{{ netSales | currency : '' : '' : '' : 'es-CO' }}
+```
+
+Cuando queremos mutar una variable de manera visual a un formato de porcentaje usamo  el pipe `percent`:
+
+```html
+{{ percent | percent }}
+```
+
+Podemos determinar la cantidad de decimales en el primer parámetro:
+
+```html
+{{ percent | percent : '.1-3' }}
+```
+
+## PrimeNg - FieldSet
+
+Dentro de la documentación de PrimeNG tenemos una sección para un componente llamado `FieldSet`. Para usarlo, hacemos la exportación del mismo, en el módulo de `PrimeNgModule`:
+
+```ts
+import { FieldsetModule } from 'primeng/fieldset';
+
+@NgModule({
+    exports: [
+        ...,
+        FieldsetModule
+    ]
+})
+export class PrimeNgModule { }
+```
+
+Para usar las animaciones de Angular, requerimos hacer la importación de un módulo llamado `BrowserAnimationsModule` dentro de nuestro `AppModule`:
+
+```ts
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+
+
+@NgModule({
+    ...,
+    imports: [
+        ...,
+        BrowserAnimationsModule,
+        ...
+    ],
+    ...
+})
+export class AppModule { }
+```
+
+Para usar el Fieldset ya podemos escribir lo siguient en nuestro template del componente:
+
+```html
+<p-fieldset legend="Header" [toggleable]="true">
+    Content
+</p-fieldset>
+```
+
+Para usar el efecto de splash cuando se cliquea el componente visual necesitamos hacer la inyección de dependecias de la configuración de PrimeNg, y dentro del método implementado de OnInit hacemos la configuración:
+
+```ts
+import { PrimeNGConfig } from 'primeng/api';
+
+export class AppComponent implements OnInit {
+    constructor(private primeNgConfig: PrimeNGConfig){}
+    
+    ngOnInit(): void {
+        this.primeNgConfig.ripple = true
+    }
+}
+```
+
+## i18nSelectPipe
+
+El pipe `i10Select`, permite hacer un mapeo de un objeto que toma en cuenta una propiedad, para poder mostar algo de acuerdo a la condición actual. Por ejemplo necesitamos mostrar la palabra invirtarlo o invitarla de acuerdo al genero. Para ello primero tenemos una varible que contenga el genero y un objeto que tome en cuenta el valor del genero y la acción a tomar:
+
+```ts
+export class NotCommonsComponent {
+    public name: string = 'David Ferrer'
+    public genre: string = 'male'
+    public inviteMap =  {
+        'male': 'invitarlo',
+        'female': 'invitarla'
+    }
+}
+```
+
+Dentro de nuestro template mostramos lo siguente:
+
+```html
+<p-fieldset legend="i18nSelect Pipe" [toggleable]="true">
+    Saludos {{ name }}, es un placer {{ genre | i18nSelect : inviteMap }} a nuestro evento
+</p-fieldset>  
+```
+
+## i18nPluralPipe
+
+Mediante este pipe podemos hacer un mapeo a un objeto para tomar en cuenta la cantidad de elementos y mostrar algo. Por ejemplo tenemos un arreglo de objetos y necesitamos mostrar cuantos hay en la lista de espera. En el objeto que nos va a ayudar a mapear tomamos en consideración la cantidad de elementos y la respuesta que debe dar si cumple la condición:
+
+```ts
+export class NotCommonsComponent {
+    ...
+    public clients: string[] = ['David', 'Juana', 'Ferrer', 'Valentina']
+    public clientsMap =  {
+        '=0': 'no tenemos ningún cliente esperando',
+        '=1': 'tenemos un cliente esperando',
+        'other': 'tenemos # clientes esperando'
+    }
+}
+```
+
+Nuestro template tiene que recibir lo que vamos a evaluar junto al pipe:
+
+```html
+Actualmente tenemos {{ clients.length | i18nPlural : clientsMap }}
+```
+
+## Tarea sobre i18nPipes
+
+Mediante un botón en cada Fieldset, necesitamos dar una funcionalidad para cambiar el nombre o más bien, el genero a la persona y observar el funcionamiento del pipe `i18nSelect` y otro botón para reducir la cantidad de elementos del array y observar el comportamiento de `i18nPlural`:
+
+```html
+<div class="grid">
+    <div class="col-12 md:col-12 lg:col-6">
+        <p-fieldset legend="i18nSelect Pipe" [toggleable]="true">
+            <p>Saludos {{ name }}, es un placer {{ genre | i18nSelect : inviteMap }} a nuestro evento</p>
+            <button pButton label="Cambiar persona" class="p-button-rounded" (click)="changeName()"></button>
+        </p-fieldset>        
+    </div>
+    <div class="col-12 md:col-12 lg:col-6">
+        <p-fieldset legend="i18nPlural Pipe" [toggleable]="true">
+            <p>Actualmente {{ clients.length | i18nPlural : clientsMap }}</p>
+            <button pButton label="Borrar cliente" class="p-button-rounded" (click)="deleteClient()"></button>
+        </p-fieldset>        
+    </div>
+</div>
+```
+
+```ts
+export class NotCommonsComponent {
+    ...
+    changeName = () => {
+        this.name = 'Valentina'
+        this.genre = 'female'
+    }  
+
+    deleteClient = () => this.clients.pop()
+}
+```
+
+## SlicePipe
+
+El pipe `slice` cumple la función de separa una porción de un string o de un arreglo desde la posición inical hasta la posición final. Por ejemplo:
+
+```html
+<p-fieldset legend="Slice Pipe" [toggleable]="true">
+    <strong>Original: </strong>
+    <pre>{{ clients }}</pre>
+
+    <strong>slice : 0 : 2</strong>
+    <pre>{{ clients | slice : 0 : 2}}</pre>
+
+    <strong>slice : 2</strong>
+    <pre>{{ clients | slice : 2 }}</pre>
+
+    <strong>slice : 1 : 3</strong>
+    <pre>{{ clients | slice : 1 : 3 }}</pre>
+</p-fieldset>  
+```
+
+Algo interesante es que caundo solo interpolamos el arreglo no se actualiza en tiempo de ejecución, pero cuando usamos el pipe slice podemos observar el cambio en el arreglo en el momento que se modifica.
+
+## KeyValuePipe
+
+Necesitamos mostrar lo que hay dentro de un objeto, mientras hacemos una lista con esas propiedades:
+
+```ts
+export class NotCommonsComponent {
+    ...
+    public person = {
+        name: 'David',
+        edad: 20,
+        address: 'Colombia'
+    }
+    ...
+}
+```
+
+El pipe `keyvalue` nos permite tener la separación de cada elemento del objeto dentro otro objeto con la etiqueta de llave valor:
+
+```html
+<ul>
+    <li *ngFor="let item of person | keyvalue">
+        <b>{{ item.key }}</b>: {{ item.value }}
+    </li>
+</ul>
+```
+
+## JsonPipe
+
+El pipe `json` es muy útil para depurar elementos que entran mediante peticiones, ya que nos expande por completo la respuesta de manera visual. Por ejemplo tenemos este objeto:
+
+```ts
+export class NotCommonsComponent {
+    ...
+    public jsonObject = {
+        array: this.clients,
+        string: this.name,
+        object1: this.inviteMap,
+        object2: this.clientsMap,
+        object3: this.person,
+        boolean: true
+    }
+    ...
+}
+```
+
+En nuestro template vamos a usar el pipe de la siguiente manera:
+
+```html
+<pre>{{ jsonObject | json }}</pre>
+```
+
+## AsyncPipe
+
+Desenvuelve el valor de un primitivo asincrono. El elemento con el que se usa debe ser un Observable o una promesa. Por ejemplo creamos un observable usando `interval()` de RxJs:
+
+```ts
+export class NotCommonsComponent {
+    ...
+    public myObservable = interval(1000)
+    ...
+}
+```
+
+En el template nos suscribimos al observable con el pipe `async` y así podemos ver como cambia su valor:
+
+```html
+<pre>{{ myObservable | async }}</pre>
+```
+
+También podemos crear una promesa:
+
+```ts
+export class NotCommonsComponent {
+    ...
+    public valuePromise = new Promise((resolve) => {
+        setTimeout(() => {
+            resolve('Tenemos data de promesa')
+        }, 2500)
+    })
+    ...
+}
+```
+
+Y en nuestro template renderizar lo que se obtenga de la promesa, pero mientras no se resuelva, se muestra un mensaje se espera:
+
+```html
+<pre *ngIf="!(valuePromise | async)">Resolviendo Promesa</pre>
+<pre>{{ valuePromise | async }}</pre>
+```
+
+Aqui cabe aclarar que si hacemos lo mismo, pero con un obsersable, la suscripción se hace 2 veces, una por cada lugar donde se use el pipe `async`:
+
+```html
+<pre *ngIf="!(myObservable | async)">Resolviendo Promesa</pre>
+<pre>{{ valuePromise | async }}</pre>
+```
