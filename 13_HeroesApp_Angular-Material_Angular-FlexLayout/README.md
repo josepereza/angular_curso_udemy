@@ -400,3 +400,346 @@ Dentro del template `hero-card.component.html` vamos a usar el pipe de la siguie
 <!-- <img mat-card-image src="assets/heroes/{{hero.id}}.jpg"> -->
 <img mat-card-image [src]="hero | imageHero">
 ```
+
+## Tarea - Ruta Héroe y Editar Héroe
+
+Vamos a hacer las redirecciones a las páginas respectivas de la ruta de ver más de héroe o para editarlo. Para ello usamos la propiedad `[routerLink]` que nos proporciona Angular en el template:
+
+```html
+<button [routerLink]="['/heroes', hero.id]">Leer más</button>
+<button [routerLink]="['/heroes/edit', hero.id]">Editar</button>
+```
+
+Dentro del componente `HeroComponent` vamos a recibir en la función `ngOnInit()` el id que se está ingresando por parámetro. Primero vamos a hacer inyección de dependencias de `ActivatedRoute`, luego dentro del método implementado en la clase nos suscribimos al atributo `params` de nuestra propiedad `activatedRoute` para observar el id que se captura:
+
+```ts
+export class HeroComponent implements OnInit {
+
+    constructor(private activatedRoute: ActivatedRoute) { }
+
+    ngOnInit(): void {
+        this.activatedRoute.params
+            .subscribe(console.log)
+    }
+}
+```
+
+## Pantalla de Héroe
+
+Como vamos a hacer peticiones a nuestro server, necesitamos hacer un div que se muestre mientras carga la información, por tal razón usamos el módulo `MatProgressSpinnerModule`, el cual exportamos desde el módulo `MaterialDesignModule`.
+
+```ts
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+
+@NgModule({
+    exports: [
+        ...,
+        MatProgressSpinnerModule
+    ]
+})
+export class MaterialDesignModule { }
+```
+
+También vamos a usar un pequeño grid-list directo de Angular Material:
+
+```ts
+import { MatGridListModule } from '@angular/material/grid-list';
+
+@NgModule({
+    exports: [
+        ...,
+        MatGridListModule
+    ]
+})
+export class MaterialDesignModule { }
+```
+
+Para traer la información de un héroe necesitamos crear un método dentro de nuestro servicio para traer un elemento por su id:
+
+```ts
+export class HeroesService {
+    public urlBase: string = 'http://localhost:3000/heroes'
+    ...
+    getHeroeById = (id: string): Observable<Hero> => {
+        return this.http.get<Hero>(`${this.urlBase}/${id}`)
+    }
+}
+```
+
+Ya podemos hacer la inyección de dependencias de nuestro servicio, dentro del constructor de la clase `HeroComponent`. También podemos crear una variable para almacenar la data del héroe acompañada del operado *Non-Null Assertion Operator* para determinar que simpre va a traer un valor. Luego en el método de `ngOnInit()` usamos el valor del parámetro obtenido para usar el servicio y obtener un héroe de manera local y posteriormente asignar el valor del mismo a nuestra variable.
+
+```ts
+export class HeroComponent implements OnInit {
+    public hero!: Hero
+
+    constructor(private activatedRoute: ActivatedRoute, private heroesService: HeroesService) { }
+
+    ngOnInit(): void {
+        this.activatedRoute.params
+            .pipe(switchMap(({ id }) => this.heroesService.getHeroeById(id)), tap(console.log))
+            .subscribe(hero => this.hero = hero)
+    }
+}
+```
+
+Por último, dentro del template creamos una columna del grid para ubicar el spin de carga mientras se carga la información del héroe. Una vez se traiga la información, entonces mostramos el `ng-template` de héroe correspodiente:
+
+```html
+<mat-grid-list cols="1" *ngIf="!hero; else divHero">
+    <mat-grid-tile>
+        <mat-spinner></mat-spinner>
+    </mat-grid-tile>
+</mat-grid-list>
+
+
+<ng-template #divHero>
+    <pre>
+        {{ hero | json }}
+    </pre>
+</ng-template>
+```
+
+## Diseño de la pantalla Héroe
+
+En nuestra pantlla del héroe no le vamos a dedicar mucho tiempo, simplemente necesitamos hacer el esqueleto para mostrar parte de su información y un botón para regresar a la lista de héroes.
+
+```html
+<ng-template #divHero>
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="30px">
+        <div fxFlex="50" fxFlex.xs="100">
+            <h1>{{ hero.superhero }} <small>{{ hero.alter_ego }}</small></h1>
+            <mat-divider></mat-divider>
+            <br>
+            <img [src]="hero | imageHero">
+        </div>
+
+        <div fxFlex="50" fxFlex.xs="50">
+            <h1>{{ hero.publisher }}</h1>
+            <mat-divider></mat-divider>
+            <mat-list>
+                <mat-list-item>{{ hero.first_appearance }}</mat-list-item>
+                <mat-list-item>{{ hero.characters }}</mat-list-item>
+                <mat-list-item>{{ hero.publisher }}</mat-list-item>
+            </mat-list>
+            <br>
+            <button mat-button color="warn" (click)="goBack()">Regresar</button>
+        </div>
+    </div>
+</ng-template>
+```
+
+Para la funcionalidad del botón de regresar necesitamos inyectar la dependencia de `Router` en el constructor del componente:
+
+```ts
+export class HeroComponent implements OnInit {
+    ...
+    constructor(..., private router: Router) { }
+    ...
+    goBack = () => this.router.navigate(['/heroes/list'])
+}
+```
+
+## Variables de entorno
+
+Dentro de la carpeta `environments` tenemos 2 archivos para configurar las variables de entorno en producción y en desarrollo. En nuestro caso necesitamos crear una nueva variable de entorno en desarrollo para poder poner la base de la url del backend. Dentro del archivo `environment.ts` añadimos una propiedad al objeto que ya se encuentra, para poner la base del url:
+
+```ts
+export const environment = {
+    production: false,
+    baseUrl: 'http://localhost:3000'
+};
+```
+
+En el archivo `environment.prod.ts` añadimos la variable de entorno para la url del proyecto backend que ya se encuentra desplegado, en este momento no tenemos un backend en producción, por lo que lo dejo en blanco:
+
+```ts
+export const environment = {
+    production: true,
+    baseUrl: ''
+};
+```
+
+Dentro de nuestro servicio podemos usar la variable de entorno para poner nuestra url. Importante que se importe el entorno de desarrollo, no el de producción.
+
+```ts
+export class HeroesService {
+    private baseUrl: string = environment.baseUrl
+    public baseEndpoint: string = `${this.baseUrl}/heroes`
+    ...
+}
+```
+
+## Material Autocomplete
+
+Vamos a hacer el buscador de héroes, para ello vamos a implementar el módulo de autocomplete de Material Angular. Dicho modulo también necesita del módulo form-field y del módulo input.
+
+```ts
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
+@NgModule({
+    exports: [
+        MatAutocompleteModule,
+        MatFormFieldModule,
+        MatInputModule
+        ...
+    ]
+})
+export class MaterialDesignModule { }
+```
+
+Neceitamos importar el `FormModule` dentro de `HeroesModule`:
+
+```ts
+import { FormsModule } from '@angular/forms';
+
+@NgModule({
+    ...,
+    imports: [
+        ...,
+        FormsModule
+    ]
+})
+export class HeroesModule { }
+```
+
+Dentro de `SearchComponent` creamos una variable para guardar el término que se ingresa por el input y se captura con el atributo `([ngModel])`:
+
+```ts
+export class SearchComponent implements OnInit {
+    public term: string = ''
+    ...
+}
+```
+
+```html
+<input type="text" placeholder="Pick one" aria-label="Search a superhero" matInput [(ngModel)]="term" [matAutocomplete]="auto">
+```
+
+También necesitamos crear un arreglo para almacenar los resultados que coinciden con el término de búsquda, los cuales se recorren dentro de las opciones del autocomplete:
+
+```ts
+export class SearchComponent implements OnInit {
+    ...
+    public heroes: Hero[] = []
+    ...
+}
+```
+
+```html
+<mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+    <mat-option *ngFor="let hero of heroes" [value]="hero">
+        {{ hero.superhero }}
+    </mat-option>
+</mat-autocomplete>
+```
+
+Dentro del campo de texto definimos la propiedad `(input)` con un método para hacer la búsqueda:
+
+```html
+<input ... (input)="searching()" >
+```
+
+En la clase `SearchComponent` hacemos la inyección de dependencias de nuestro servicio y creamos el método que por el momento solo trae a todo los héroes sin hacer un filtro:
+
+```ts
+export class SearchComponent implements OnInit {
+    ...
+    constructor(private heroesService: HeroesService) { }
+    ...
+    searching = () => {
+        this.heroesService.getHeroes()
+            .subscribe(heroes => this.heroes = heroes)
+    }
+}
+```
+
+Si en nuestro input seleccionamos alguna de las opciones del autocompletado, entonces aparace la representación `[object Object]` la cual es la representación de pasar un objeto por el método `toString()`.
+
+## Autocomplete - Segunda Parte
+
+Dentro de nuestro servicio necesitamos crear un método para poder hacer el llamado a un endpoint que realice una query en los parámetros, y de ser necesario aplicando un limite de resultados:
+
+```ts
+export class HeroesService {
+    ...
+    getSuggestions = (term: string): Observable<Hero[]> => {
+        const params = new HttpParams()
+            .set('q', `${term}`)
+            .set('_limit', '5')
+        return this.http.get<Hero[]>(this.baseEndpoint, { params })
+    }
+}
+```
+
+Dentro de la clase `SearchComponent`, hacemos el llamado del método que acabamos de crear y le enviamos el término que capturamos del `([ngModel])`:
+
+```ts
+export class SearchComponent implements OnInit {
+    ...
+    searching = () => {
+        this.heroesService.getSuggestions(this.term)
+            .subscribe(heroes => this.heroes = heroes)
+    }
+}
+```
+
+Es importante mencionar que las opciones que aparecen en las sugerencias puede parecer que no tienen relación con lo que se ingresa, por ejemplo que se ingrese la letra B y aparece Flash, esto se debe a que hay atributos dentro de flash que coinciden con la B, como Barry Allen. El backend que estamos usando no tiene filtros tan precisos.
+
+Una vez se hace la selección de una de las opciones de autocomplete, entonces se debe traer la información de héroe seleccionado. Necesitamos hacer uso de la propiedad `(optionSelected)` dentro del autocomplete apuntado a una función que captura el evento del mismo:
+
+```html
+<mat-autocomplete ... (optionSelected)="optionSelected($event)">...</mat-autocomplete>
+```
+
+Dentro de la clase necesitamos crear una variable para almacenar la información del héroe seleccionado. La función define el tipo del evento que se recibe, del cual obtenemos la información del héroe seleccionado. El término de búsqueda se va a igualar al nombre del superheroe. Luego nos suscribimos a la función del servicio para traer la información completa del héroe por su id.
+
+```ts
+export class SearchComponent implements OnInit {
+    ...
+    public heroSelected!: Hero
+    ...
+    optionSelected = (event: MatAutocompleteSelectedEvent) => {
+        const hero: Hero = event.option.value
+        this.term = hero.superhero
+        this.heroesService.getHeroeById(hero.id!)
+            .subscribe(hero => this.heroSelected = hero)
+    }
+}
+```
+
+## Tarea - Autocomplete cuando no encontró nada
+
+Cuando se ingresa algo que no coincida con elementos dentro de la base de datos, o si se ingresa un valor vacio, no debemos hacer ninguna petición. Además debemos mostrar una opción en caso de que no hayan coincidencias:
+
+```html
+<mat-option *ngIf="heroes.length === 0 && term.trim().length > 0" value="">
+    No se encontro ningún resultado por el termino "{{ term }}"
+</mat-option>
+```
+
+Dentro de nuestra clase `SearchComponent` vamos a tener lo siguiente en el método de obtener la información a partir de una opción seleccionada:
+
+```ts
+export class SearchComponent implements OnInit {
+    ...
+    public heroSelected: Hero | undefined
+    ...
+    optionSelected = (event: MatAutocompleteSelectedEvent) => {
+        if (!event.option.value) return
+        const hero: Hero = event.option.value
+        this.term = hero.superhero
+        this.heroesService.getHeroeById(hero.id!)
+            .subscribe(hero => this.heroSelected = hero)
+    }
+}
+```
+
+Para mostrar la información de héroe seleccionado, hacemos la validación de que si se haya encontrado y lo mostramos dentro de una terjeta:
+
+```html
+<div *ngIf="heroSelected" fxLayout="row wrap" fxLayoutAlign="center">
+    <app-hero-card [hero]="heroSelected" fxFlex="50"></app-hero-card>
+</div>
+```

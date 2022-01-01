@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -30,6 +31,7 @@ import { ImageHeroPipe } from './pipes/image-hero.pipe';
         CommonModule,
         HeroesRoutingModule,
         FlexLayoutModule,
+        FormsModule,
         MaterialDesignModule
     ]
 })
