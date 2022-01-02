@@ -1,0 +1,63 @@
+<h1>
+    {{ (hero.id) ? 'Editar' : 'Nuevo'}}
+    Héroe:
+    <small>{{ hero.superhero }}</small>
+</h1>
+
+<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="40px">
+    <div fxFlex="50" fxLayout="column">
+
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px">
+            <mat-form-field fxFlex="50">
+                <mat-label>Superhero</mat-label>
+                <input type="text" matInput required [(ngModel)]="hero.superhero">
+            </mat-form-field>
+
+            <mat-form-field fxFlex="50">
+                <mat-label>Alter Ego</mat-label>
+                <input type="text" matInput required [(ngModel)]="hero.alter_ego">
+            </mat-form-field>
+        </div>
+
+        <mat-form-field fxFlex="100">
+            <mat-label>Primera aparición</mat-label>
+            <input type="text" matInput required [(ngModel)]="hero.first_appearance">
+        </mat-form-field>
+
+        <mat-form-field fxFlex="100">
+            <mat-label>Personajes</mat-label>
+            <input type="text" matInput required [(ngModel)]="hero.characters">
+        </mat-form-field>
+
+        <mat-form-field fxFlex="100">
+            <mat-label>Casa creadora</mat-label>
+            <mat-select required [(ngModel)]="hero.publisher">
+                <mat-option *ngFor="let p of publisher" [value]="p.id">{{ p.desc }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="100">
+            <mat-label>URL Foto</mat-label>
+            <input type="url" matInput required [(ngModel)]="hero.alt_img">
+        </mat-form-field>
+
+        <br>
+
+        <div fxLayout="row">
+            <button *ngIf="hero.id" mat-stroked-button color="warn" (click)="delete_hero()">
+                Eliminar
+                <mat-icon>delete_outline</mat-icon>
+            </button>
+            <span class="spacer"></span>
+            <button mat-raised-button color="primary" (click)="save()">
+                {{ (hero.id) ? 'Actualizar' : 'Crear'}}
+                <mat-icon>{{ (hero.id) ? 'edit' : 'save'}}</mat-icon>
+            </button>
+        </div>
+    </div>
+
+
+    <div fxFlex="50" fxFlexAlign="center">
+        <img [src]="hero | imageHero">
+    </div>
+</div>
