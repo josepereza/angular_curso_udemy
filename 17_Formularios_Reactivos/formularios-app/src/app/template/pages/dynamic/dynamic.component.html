@@ -1,0 +1,47 @@
+<h1>Template: <small>Dinámicos</small></h1>
+<hr>
+
+<form (ngSubmit)="save()" #myForm="ngForm" autocomplete="off">
+    <div class="mb-3 row">
+        <div class="col-sm-3 col-form-label">Nombre</div>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" placeholder="Nombre de la persona" [ngModel]="person.name" name="name" minlength="3"
+                required>
+            <span *ngIf="myForm.controls['name']?.invalid && myForm.controls['name']?.touched"
+                class="form-text text-danger">Debe ser más de 3 letras</span>
+        </div>
+    </div>
+
+
+    <div class="mb-3 row">
+        <div class="col-sm-3 col-form-label">Agregar</div>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input class="form-control" placeholder="Agregar favorito" [(ngModel)]="newGame" name="new-game" (keyup.enter)="addGame()">
+                <button class="btn btn-dark" type="button" (click)="addGame()">Agregar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mb-3 row">
+        <div class="col-sm-3 col-form-label">Favoritos</div>
+        <div class="col-sm-9">
+            <div class="input-group mb-1" *ngFor="let game of person.favorites; let i = index" >
+                <input class="form-control" [(ngModel)]="game.name" name="game_{{i}}" required>
+                <button class="btn btn-outline-danger" type="button" (click)="delete(i)">X</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <button tupe="submit" (click)="save()" class="btn btn-primary float-end"
+                [disabled]="myForm.invalid">Guardar</button>
+        </div>
+    </div>
+</form>
+
+<span>Persona</span>
+<pre>{{ person | json }}</pre>

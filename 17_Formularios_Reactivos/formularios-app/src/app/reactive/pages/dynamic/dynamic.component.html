@@ -1,0 +1,63 @@
+<h1>Reactive: <small>Dinámicos</small></h1>
+<hr>
+
+<form autocomplete="off" [formGroup]="myForm" (ngSubmit)="save()">
+    <div class="mb-3 row">
+        <div class="col-sm-3 col-form-label">Nombre</div>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" placeholder="Nombre de la persona" formControlName="name">
+            <span class="form-text text-danger" *ngIf="isInvalidField('name')">El nombre debe tener más de 3 letras</span>
+        </div>
+    </div>
+
+
+    <div class="mb-3 row">
+        <div class="col-sm-3 col-form-label">Agregar</div>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input class="form-control" placeholder="Agregar favorito" [formControl]="newFavorite" (keyup.enter)="addFav()">
+                <button class="btn btn-dark" type="button" (click)="addFav()">Agregar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mb-3 row">
+        <div class="col-sm-3 col-form-label">Favoritos</div>
+        <div class="col-sm-9" formArrayName="favorites" >
+            <div class="input-group mb-1" *ngFor="let fav of favoritesArr.controls; let i = index">
+                <input class="form-control" [formControlName]= 'i'>
+                <button class="btn btn-outline-danger" type="button" (click)="deleteFav(i)">X</button>
+            </div>
+            <span class="form-text text-danger" *ngIf="isInvalidField('favorites')">Se requiere mínimo un juego</span>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <button tupe="submit" class="btn btn-primary float-end">Guardar</button>
+        </div>
+    </div>
+</form>
+
+
+
+<div class="row">
+    <div class="col">
+        <span>Valid</span>
+        <pre>{{ myForm.valid | json }}</pre>
+
+        <span>Pristine</span>
+        <pre>{{ myForm.pristine | json }}</pre>
+
+        <span>Touched</span>
+        <pre>{{ myForm.touched | json }}</pre>
+
+        <span>Value</span>
+        <pre>{{ myForm.value | json }}</pre>
+
+        <span>Errors</span>
+        <pre>{{ myForm.controls['name']?.errors | json }}</pre>
+    </div>
+</div>

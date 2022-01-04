@@ -1,0 +1,69 @@
+<h1>Reactive: <small>Básicos</small></h1>
+<hr>
+
+
+
+<div class="row">
+    <div class="col">
+        <form (ngSubmit)="save()" autocomplete="off" [formGroup]="myForm">
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-control">Producto *</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" formControlName="name" placeholder="Nombre del producto">
+                    <span class="form-text text-danger" *ngIf="isInvalidField('name')">El nombre debe de ser de 3
+                        letras</span>
+                </div>
+            </div>
+
+
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-control">Precio *</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control" formControlName="price" placeholder="Precio del producto">
+                    <span class="form-text text-danger" *ngIf="isInvalidField('price')">El precio debe ser mayor o igual
+                        a 0</span>
+                </div>
+            </div>
+
+
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-control">Existencias *</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control" formControlName="stocks"
+                        placeholder="Existencias del producto">
+                    <span class="form-text text-danger" *ngIf="isInvalidField('stocks')">Las existencias deben ser
+                        mayores o iguales a 10</span>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col">
+                    <button type="submit" class="btn btn-primary float-end">Guardar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col">
+        <span>Valid</span>
+        <pre>{{ myForm.valid | json }}</pre>
+
+        <span>Pristine</span>
+        <pre>{{ myForm.pristine | json }}</pre>
+
+        <span>Touched</span>
+        <pre>{{ myForm.touched | json }}</pre>
+
+        <span>Value</span>
+        <pre>{{ myForm.value | json }}</pre>
+
+        <span>Errors</span>
+        <pre>{{ myForm.controls['name']?.errors | json }}</pre>
+        <pre>{{ myForm.controls['price']?.errors | json }}</pre>
+        <pre>{{ myForm.controls['stocks']?.errors | json }}</pre>
+    </div>
+</div>

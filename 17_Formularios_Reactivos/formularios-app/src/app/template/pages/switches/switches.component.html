@@ -1,0 +1,70 @@
+<h1>Template: <small>Switches</small></h1>
+<hr>
+
+
+<form #myForm="ngForm">
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Género</label>
+        <div class="col-sm-9">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="radioGenre" id="radioMale" value="M"
+                    [(ngModel)]="person.genre" required>
+                <label class="form-check-label" for="radioMale">
+                    Masculino
+                </label>
+            </div>
+
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="radioGenre" id="radioFemale" value="F"
+                    [(ngModel)]="person.genre" required>
+                <label class="form-check-label" for="radioFemale">
+                    Fenemino
+                </label>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Notificaciones</label>
+        <div class="col-sm-9 mt-2">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
+                    [(ngModel)]="person.notifications" name="notifications">
+                <label class="form-check-label" for="flexSwitchCheckChecked">Quiero recibir notificaciones</label>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="flexCheckDefault" name="termsAndConditions" [(ngModel)]="termsAndConditions" required>
+                <label class="form-check-label" for="flexCheckDefault">
+                    Términos y Condiciones
+                </label>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary float-end" [disabled]="myForm.invalid">Guardar</button>
+        </div>
+    </div>
+</form>
+
+<div class="mt-5">
+    <span>Valor del formulario</span>
+    <pre>{{ myForm.value | json }}</pre>
+
+    <span>Valido</span>
+    <pre>{{ myForm.valid | json }}</pre>
+
+    <span>Términos y Condiciones</span>
+    <pre>{{ myForm.controls['termsAndConditions']?.errors | json }}</pre>
+</div>
