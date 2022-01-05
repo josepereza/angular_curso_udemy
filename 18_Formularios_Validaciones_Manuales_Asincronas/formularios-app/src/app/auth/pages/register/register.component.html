@@ -1,0 +1,103 @@
+<h1>Validaciones Reactivas</h1>
+<hr>
+
+
+<div class="row">
+    <div class="col">
+        <form autocomplete="off" [formGroup]="form" (ngSubmit)="save()">
+            <div class="row mb-3">
+                <label for="" class="col-sm-3 col-form-label">Nombre *</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="Nombre del Usuario" formControlName="name">
+                    <span class="form-text text-danger" *ngIf="isInvalidField('name')">Debe ser en formato de nombre y
+                        apellido</span>
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                <label for="" class="col-sm-3 col-form-label">Email *</label>
+                <div class="col-sm-9">
+                    <input type="email" class="form-control" placeholder="Email del Usuario" formControlName="email">
+                    <span class="form-text text-danger" *ngIf="isInvalidField('email')">{{ emailError }}</span>
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                <label for="" class="col-sm-3 col-form-label">Username *</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" placeholder="Username" formControlName="username">
+                    <span class="form-text text-danger" *ngIf="isInvalidField('username')">El username es requerido o ya
+                        está siendo ocupado</span>
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                <label for="" class="col-sm-3 col-form-label">Password</label>
+                <div class="col-sm-9">
+                    <input type="password" class="form-control" placeholder="Password" formControlName="password">
+                    <span class="form-text text-danger" *ngIf="isInvalidField('password')">La contraseña debe de tener
+                        más de 8 caracteres</span>
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                <label for="" class="col-sm-3 col-form-label">Confirmar Password</label>
+                <div class="col-sm-9">
+                    <input type="password" class="form-control" placeholder="Password Confirm"
+                        formControlName="confirm_password">
+                    <span class="form-text text-danger" *ngIf="isInvalidField('confirm_password')">Las contraseñas deben
+                        de coincidir</span>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col">
+                    <button type="submit" class="btn btn-primary float-end" [disabled]="form.pending">Crear
+                        Usuario</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="row my-5">
+    <div class="col -6">
+        <span>Valid</span>
+        <pre>{{ form.valid | json }}</pre>
+
+        <span>Errors</span>
+        <pre>{{ form.errors | json }}</pre>
+
+        <span>Status</span>
+        <pre>{{ form.status | json }}</pre>
+
+        <span>Value</span>
+        <pre>{{ form.value | json }}</pre>
+
+        <span>Pending</span>
+        <pre>{{ form.pending | json }}</pre>
+    </div>
+
+    <div class="col-6">
+        <span>Errors Name</span>
+        <pre>{{ form.controls['name']?.errors | json }}</pre>
+
+        <span>Errors Email</span>
+        <pre>{{ form.controls['email']?.errors | json }}</pre>
+
+        <span>Errors Username</span>
+        <pre>{{ form.controls['username']?.errors | json }}</pre>
+
+        <span>Errors Password</span>
+        <pre>{{ form.controls['password']?.errors | json }}</pre>
+
+        <span>Errors Confirm Password</span>
+        <pre>{{ form.controls['confirm_password']?.errors | json }}</pre>
+    </div>
+</div>
