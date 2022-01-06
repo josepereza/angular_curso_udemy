@@ -1,0 +1,91 @@
+<h1 class="mt-5">Selectores Anidados</h1>
+<hr>
+
+<div class="row">
+    <div class="col-sm-12 col-md-8">
+        <form [formGroup]="form" (ngSubmit)="save()">
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label">Continente</label>
+                    <select class="form-control" formControlName="region">
+                        <option value="">-- Seleccione Continente --</option>
+                        <option *ngFor="let region of regions" [value]="region | lowercase">{{ region }}</option>
+                    </select>
+                    <span class="form-text text-danger" *ngIf="isInvalidField('region')">Por favor seleccione un
+                        continente</span>
+                </div>
+            </div>
+
+
+            <div class="row mb-3" *ngIf="countries.length !== 0">
+                <div class="col">
+                    <label class="form-label">País</label>
+                    <select class="form-control" formControlName="country">
+                        <option value="">-- Seleccione País --</option>
+                        <option *ngFor="let country of countries" [value]="country.cca2">{{
+                            country.name.common }}
+                        </option>
+                    </select>
+                    <span class="form-text text-danger" *ngIf="isInvalidField('country')">Por favor seleccione un
+                        país</span>
+                </div>
+            </div>
+
+
+            <div class="row mb-5" *ngIf="borders.length !== 0">
+                <div class="col">
+                    <label class="form-label">Fronteras</label>
+                    <select class="form-control" formControlName="border">
+                        <option value="">-- Seleccione Frontera --</option>
+                        <option *ngFor="let border of borders" [value]="border.cca2">
+                            {{ border.name.common }}
+                        </option>
+                    </select>
+                    <span class="form-text text-danger" *ngIf="isInvalidField('border')">Por favor seleccione una
+                        frontera</span>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="loading">
+                <div class="col">
+                    <div class="alert alert-primary">Cargando</div>
+                </div>
+            </div>
+
+
+            <div class="row mb-5">
+                <div class="col">
+                    <button class="btn btn-primary float-end" type="submit" [disabled]="form.pending">Consultar</button>
+                </div>
+            </div>
+        </form>
+        <hr>
+    </div>
+
+
+    <div class="col-sm-6 col-md-2">
+        <span>Value</span>
+        <pre>{{ form.value | json }}</pre>
+
+        <span>Valid</span>
+        <pre>{{ form.valid | json }}</pre>
+
+        <span>Status</span>
+        <pre>{{ form.status | json }}</pre>
+
+        <span>Pending</span>
+        <pre>{{ form.pending | json }}</pre>
+    </div>
+
+
+    <div class="col-sm-6 col-md-2">
+        <span>Errors Region</span>
+        <pre>{{ form.controls['region']?.errors | json }}</pre>
+
+        <span>Errors Country</span>
+        <pre>{{ form.get('country')?.errors | json }}</pre>
+
+        <span>Errors Borders</span>
+        <pre>{{ form.get('border')?.errors | json }}</pre>
+    </div>
+</div>
