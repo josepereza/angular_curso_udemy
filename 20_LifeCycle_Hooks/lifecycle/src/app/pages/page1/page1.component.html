@@ -1,0 +1,10 @@
+<h2>Page 1</h2>
+<input type="text" [(ngModel)]="name">
+<button (click)="save()">Click</button>
+
+
+<h2>Show Name</h2>
+<app-show-name [name]="name"></app-show-name>
+
+
+<h2>Seconds: {{ seconds }}</h2>
