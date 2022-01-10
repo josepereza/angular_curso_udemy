@@ -1,0 +1,19 @@
+<h1>Diagrama de Dona con petición HTTP</h1>
+<hr>
+
+<div *ngIf="doughnutChartData.datasets.length === 0; else divGraph" class="row">
+    <div class="col">
+        <div class="alert alert-info ">Cargando...</div>
+    </div>
+</div>
+
+<ng-template #divGraph>
+    <div class="row">
+        <div class="col-12">
+            <div style="display: block">
+                <canvas baseChart [data]="doughnutChartData" [type]="doughnutChartType">
+                </canvas>
+            </div>
+        </div>
+    </div>
+</ng-template>
