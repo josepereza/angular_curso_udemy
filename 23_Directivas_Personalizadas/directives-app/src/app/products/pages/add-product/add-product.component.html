@@ -1,0 +1,50 @@
+<h1>Agregar Producto</h1>
+<hr>
+
+<form [formGroup]="form">
+    <div class="row g-3 align-items-center mb-3">
+        <div class="col-auto">
+            <label class="col-form-label">Nombre:</label>
+        </div>
+        <div class="col-auto">
+            <input class="form-control" formControlName="name">
+        </div>
+        <div class="col-auto">
+            <!-- <span *ngIf="isInvalidField('name')" error-msg [color]="colorError" [message]="msgError"></span> -->
+            <span error-msg [color]="colorError" [message]="msgError" [invalid]="isInvalidField('name')"></span>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <button class="btn btn-outline-primary">Guardar</button>
+        </div>
+    </div>
+</form>
+
+
+<div class="mt-5">
+    <h3>Formulario</h3>
+    <hr>
+    
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            <span>Valid</span>
+            <pre>{{ form.valid | json }}</pre>
+            <span>Value</span>
+            <pre>{{ form.valid | json }}</pre>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <span>Name Errors</span>
+            <pre>{{ form.controls['name']?.errors | json }}</pre>
+        </div>
+    </div>
+
+    <div class="row mt-3" *customIf="!isInvalidField('name')">
+        <div class="col">
+            <div class="alert alert-success">
+                Todo OK!
+            </div>
+        </div>
+    </div>
+</div>
