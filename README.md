@@ -17,3 +17,7 @@ Algunas de las instalaciones recomendadas para el curso son las siguientes: ([Do
 ## Instalar Angular CLI
 
 Para instalar la interfaz de línea de comandos usamos el siguiente comando como administradores: `npm install -g @angular/cli`. Para observar la versión de Angular CLI usamos el comando `ng --version`
+
+## Certificado de finalización del curso
+
+![certificado](UC-7543f2c5-9da2-46db-beb6-ba8f52ce4291.jpg)
