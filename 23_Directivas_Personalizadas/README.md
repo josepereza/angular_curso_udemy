@@ -449,3 +449,37 @@ Teniendo en cuenta que nosotros dejamos el input con el mismo nombre del selecto
 ```
 
 Está sería otra manera de ocultar el mensaje de error de un campo, aunque es menos usada por su complejidad
+
+## Directiva con renderer y hostlistener
+
+```
+import { Directive, ElementRef, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[msgError]'
+})
+export class MsgErrorDirective  implements OnInit{
+@Input() elemento:string='red';
+@HostListener('mouseover',['$event.target'])
+onMouseover(){
+  this.renderer.setStyle(this.el.nativeElement, 'fontSize', '2em');
+
+}
+@HostListener('mouseout',['$event.target'])
+onMouseout(){
+  this.renderer.setStyle(this.el.nativeElement, 'fontSize', '0.8em');
+
+}
+  constructor(private el:ElementRef<HTMLElement>,
+    private renderer:Renderer2
+    ) { 
+   
+  }
+  ngOnInit(): void {
+ this.el.nativeElement.style.color="red" 
+ this.renderer.setStyle(this.el.nativeElement, 'color', this.elemento);
+  }
+
+}
+
+```
